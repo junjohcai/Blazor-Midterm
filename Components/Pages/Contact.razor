@@ -8,18 +8,28 @@
     <!-- Solid Header -->
     <header class="bg-forest text-white py-6 px-5 md:px-10 lg:px-16">
         <div class="mx-auto flex max-w-[1440px] items-center justify-between">
-            <a href="/" class="logo group flex items-center gap-2.5 text-left" aria-label="Roamwild home">
-                <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
-                    <AppIcon Name="compass" Size="22" />
-                </span>
-                <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
-            </a>
+            <div class="flex items-center gap-4">
+                <a href="/#experiences" class="grid h-10 w-10 place-items-center rounded-full border border-white/35 transition-transform hover:scale-105" aria-label="Back to home">
+                    <span class="rotate-180"><AppIcon Name="arrow" Size="18" /></span>
+                </a>
+                <a href="/" class="logo group flex items-center gap-2.5 text-left" aria-label="Roamwild home">
+                    <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                        <AppIcon Name="compass" Size="22" />
+                    </span>
+                    <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+                </a>
+            </div>
+
             <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
-                <a class="nav-link hover:text-coral transition-colors" href="/#journeys">Destinations</a>
-                <a class="nav-link hover:text-coral transition-colors" href="/#experiences">Experiences</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/destinations">Destinations</a>
                 <a class="nav-link hover:text-coral transition-colors" href="/journal">Journal</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/experts">Experts</a>
                 <a class="nav-link text-coral" href="/contact">Contact</a>
             </nav>
+
+            <a href="/contact" class="hidden h-11 items-center gap-2 rounded-full border border-white/40 px-5 text-sm font-semibold transition-colors hover:bg-white hover:text-forest sm:flex">
+                Plan my trip <AppIcon Name="arrow" Size="17" />
+            </a>
         </div>
     </header>
 

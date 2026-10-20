@@ -1,0 +1,139 @@
+@page "/experts"
+@using MyBlazorApp.Components.Shared
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<PageTitle>Roamwild - Our Local Experts</PageTitle>
+
+<main class="min-h-screen bg-sand text-forest selection:bg-coral selection:text-white pb-24">
+    <!-- Solid Header -->
+    <!-- Solid Header with Back Button -->
+    <header class="bg-forest text-white py-6 px-5 md:px-10 lg:px-16">
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="/#experiences" class="grid h-10 w-10 place-items-center rounded-full border border-white/35 transition-transform hover:scale-105" aria-label="Back to experiences">
+                    <span class="rotate-180"><AppIcon Name="arrow" Size="18" /></span>
+                </a>
+                <a href="/" class="logo group flex items-center gap-2.5 text-left">
+                    <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                        <AppIcon Name="compass" Size="22" />
+                    </span>
+                    <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+                </a>
+            </div>
+
+            <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
+                <a class="nav-link hover:text-coral transition-colors" href="/destinations">Destinations</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/journal">Journal</a>
+                <a class="nav-link text-coral" href="/experts">Experts</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/contact">Contact</a>
+            </nav>
+
+            <a href="/contact" class="hidden h-11 items-center gap-2 rounded-full border border-white/40 px-5 text-sm font-semibold transition-colors hover:bg-white hover:text-forest sm:flex">
+                Plan my trip <AppIcon Name="arrow" Size="17" />
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Title Section -->
+    <section class="mx-auto max-w-[1440px] px-5 pt-20 pb-12 md:px-10 lg:px-16">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-coral">People Behind the Journey</p>
+        <h1 class="font-display text-5xl md:text-7xl leading-tight mt-4">Meet our local <em>experts.</em></h1>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-forest/70">Our guides don’t just show you around—they call these places home. Get to know the storytellers, mountaineers, and marine naturalists who make your escape unforgettable.</p>
+    </section>
+
+    <!-- Experts Grid -->
+    <section class="mx-auto max-w-[1440px] px-5 pb-24 md:px-10 lg:px-16">
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            @foreach (var expert in experts)
+            {
+                <article class="group bg-cream rounded-[2rem] overflow-hidden shadow-sm border border-forest/5 flex flex-col justify-between">
+                    <div>
+                        <div class="relative aspect-[4/3] overflow-hidden bg-sand">
+                            <img src="@expert.Image" alt="@expert.Name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-forest/60 via-transparent to-transparent"></div>
+                            <span class="absolute left-5 bottom-4 flex items-center gap-2 rounded-full bg-white/90 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-forest backdrop-blur">
+                                <AppIcon Name="location" Size="14" /> @expert.Location
+                            </span>
+                        </div>
+                        <div class="p-8">
+                            <span class="text-xs font-bold uppercase tracking-[0.2em] text-coral">@expert.Specialty</span>
+                            <h3 class="mt-2 font-display text-3xl leading-tight">@expert.Name</h3>
+                            <p class="mt-4 text-sm leading-7 text-forest/70">@expert.Bio</p>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-0">
+                        <a href="/contact" class="flex items-center justify-between w-full rounded-xl bg-forest/5 px-5 py-3 text-sm font-bold text-forest transition-colors hover:bg-forest hover:text-white">
+                            <span>Connect with @expert.FirstName</span>
+                            <AppIcon Name="arrow" Size="16" />
+                        </a>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+</main>
+
+@code {
+    private record Expert(string Name, string FirstName, string Location, string Specialty, string Bio, string Image);
+
+    private List<Expert> experts = new()
+    {
+        new(
+            Name: "Mateo Alcantara",
+            FirstName: "Mateo",
+            Location: "Palawan & Siargao, Philippines",
+            Specialty: "Island Expeditions & Free Diving",
+            Bio: "Born and raised along the coasts of Palawan, Mateo has spent over a decade mapping hidden lagoons and managing sustainable community reef projects.",
+            Image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=800"
+        ),
+        new(
+            Name: "Aiko Tanaka",
+            FirstName: "Aiko",
+            Location: "Kyoto & Arashiyama, Japan",
+            Specialty: "Temple Heritage & Tea Masters",
+            Bio: "A former architectural historian in Kyoto, Aiko designs paths that bypass tourist crowds, connecting travelers directly with multigenerational tea artisans.",
+            Image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=800"
+        ),
+        new(
+            Name: "Youssef Benali",
+            FirstName: "Youssef",
+            Location: "Sahara & Marrakech, Morocco",
+            Specialty: "Desert Caravans & Nomadic Lore",
+            Bio: "A desert guide whose family has tracked the Saharan stars for generations. Youssef brings ancient poetry, firelight music, and profound stillness to every night under the dunes.",
+            Image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=800"
+        ),
+        new(
+            Name: "Eléonore Dubois",
+            FirstName: "Eléonore",
+            Location: "Bernese Alps, Switzerland",
+            Specialty: "Alpine Mountaineering & Glaciers",
+            Bio: "An elite alpine guide and avid photographer who knows every hidden ridge, glacier pass, and quiet valley tavern across the Swiss highlands.",
+            Image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=800"
+        ),
+        new(
+            Name: "Juma Kiprop",
+            FirstName: "Juma",
+            Location: "Maasai Mara, Kenya",
+            Specialty: "Wildlife Tracking & Conservation",
+            Bio: "Working alongside frontline conservationists in the Mara, Juma reads the savannah like an open book, tracking migrations with unmatched precision and respect.",
+            Image: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=800"
+        ),
+        new(
+            Name: "Sofía Valenzuela",
+            FirstName: "Sofía",
+            Location: "Patagonia, Chile",
+            Specialty: "Southern Fjords & Wilderness Trekking",
+            Bio: "A rugged wilderness enthusiast who has spent years guiding travelers through the stormy winds and granite spires of Torres del Paine.",
+            Image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=800"
+        )
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
+    }
+}
