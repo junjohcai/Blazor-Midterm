@@ -1,4 +1,70 @@
-/* Styles/app.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Default / Philippines (Teal & Coral) */
+  :root, .theme-tropical {
+    --color-cream: 249 246 240;
+    --color-forest: 27 59 54;
+    --color-coral: 239 102 80;
+    --color-coral-dark: 216 88 68;
+    --color-sand: 232 227 217;
+  }
+  /* Japan (Deep Plum & Sakura Pink) */
+  .theme-sakura {
+    --color-cream: 255 247 248;
+    --color-forest: 61 38 42;
+    --color-coral: 232 93 117;
+    --color-coral-dark: 201 74 96;
+    --color-sand: 242 225 230;
+  }
+  /* Morocco (Warm Brown & Terracotta) */
+  .theme-desert {
+    --color-cream: 252 249 242;
+    --color-forest: 74 59 44;
+    --color-coral: 212 140 70;
+    --color-coral-dark: 181 116 54;
+    --color-sand: 238 220 198;
+  }
+  /* Switzerland (Alpine Blue & Slate) */
+  .theme-alpine {
+    --color-cream: 244 247 249;
+    --color-forest: 30 58 76;
+    --color-coral: 90 140 174;
+    --color-coral-dark: 69 109 138;
+    --color-sand: 221 229 237;
+  }
+  /* Kenya (Deep Olive & Golden Yellow) */
+  .theme-savanna {
+    --color-cream: 253 251 247;
+    --color-forest: 62 54 36;
+    --color-coral: 224 158 54;
+    --color-coral-dark: 194 133 42;
+    --color-sand: 234 227 210;
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply hover:text-coral transition-colors duration-200;
+  }
+  .hero-shade {
+    @apply bg-gradient-to-b from-black/60 via-black/20 to-black/40 pointer-events-none;
+  }
+  .eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-coral;
+  }
+  .section-title {
+    @apply font-display text-4xl md:text-5xl lg:text-6xl leading-tight;
+  }
+  .search-field {
+    @apply flex flex-col gap-1 border-b border-forest/10 px-6 py-4 md:border-b-0 md:border-r;
+  }
+  .search-field span {
+    @apply flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest/70;
+  }
+  .search-field input, .search-field select {
+    @apply w-full bg-transparent text-sm font-medium text-forest outline-none placeholder:text-forest/40;
+  }
+}

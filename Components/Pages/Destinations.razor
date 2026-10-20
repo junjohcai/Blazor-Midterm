@@ -1,0 +1,136 @@
+@page "/destinations"
+@using MyBlazorApp.Components.Shared
+@using MyBlazorApp.Models
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<PageTitle>Roamwild - All Destinations</PageTitle>
+
+<main class="min-h-screen bg-sand text-forest selection:bg-coral selection:text-white pb-24">
+    <!-- Solid Header -->
+    <header class="bg-forest text-white py-6 px-5 md:px-10 lg:px-16">
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between">
+            <a href="/" class="logo group flex items-center gap-2.5 text-left">
+                <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                    <AppIcon Name="compass" Size="22" />
+                </span>
+                <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+            </a>
+            <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
+                <a class="nav-link text-coral" href="/destinations">Destinations</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/#experiences">Experiences</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/journal">Journal</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="mx-auto max-w-[1440px] px-5 py-20 md:px-10 lg:px-16">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-coral">Explore the Globe</p>
+        <h1 class="font-display text-5xl md:text-7xl leading-tight mt-4">All <em>Destinations.</em></h1>
+        
+        <!-- Filter Bar -->
+        <div class="mt-12 flex flex-wrap items-center gap-4 border-b border-forest/10 pb-6">
+            <span class="text-xs font-bold uppercase tracking-widest text-forest/50 mr-4">Filter by:</span>
+            
+            <button @onclick='() => SetFilter("All")' class="px-5 py-2 rounded-full text-sm font-semibold transition-colors @(activeFilter == "All" ? "bg-forest text-white" : "bg-white/50 text-forest hover:bg-white")">
+                All
+            </button>
+            <button @onclick='() => SetFilter("Asia")' class="px-5 py-2 rounded-full text-sm font-semibold transition-colors @(activeFilter == "Asia" ? "bg-forest text-white" : "bg-white/50 text-forest hover:bg-white")">
+                Asia
+            </button>
+            <button @onclick='() => SetFilter("Europe")' class="px-5 py-2 rounded-full text-sm font-semibold transition-colors @(activeFilter == "Europe" ? "bg-forest text-white" : "bg-white/50 text-forest hover:bg-white")">
+                Europe
+            </button>
+            <button @onclick='() => SetFilter("Africa")' class="px-5 py-2 rounded-full text-sm font-semibold transition-colors @(activeFilter == "Africa" ? "bg-forest text-white" : "bg-white/50 text-forest hover:bg-white")">
+                Africa
+            </button>
+            <button @onclick='() => SetFilter("South America")' class="px-5 py-2 rounded-full text-sm font-semibold transition-colors @(activeFilter == "South America" ? "bg-forest text-white" : "bg-white/50 text-forest hover:bg-white")">
+                South America
+            </button>
+        </div>
+
+        <!-- Filtered Grid -->
+        <div class="mt-10 grid gap-7 md:grid-cols-3">
+            @if (filteredDestinations.Any())
+            {
+                @foreach (var dest in filteredDestinations)
+                {
+                    <article class="journey-card group">
+                        <div class="relative aspect-[4/5] overflow-hidden rounded-[1.75rem]">
+                            <img class="h-full w-full object-cover transition duration-700 group-hover:scale-105" src="@dest.Image" alt="@dest.Alt" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent"></div>
+                            <span class="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-xs font-bold uppercase tracking-wider text-forest backdrop-blur">
+                                @dest.Badge
+                            </span>
+                            <div class="absolute bottom-0 left-0 p-6 text-white">
+                                <p class="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/75"><AppIcon Name="location" Size="15" /> @dest.Location</p>
+                                <h3 class="font-display text-3xl leading-tight">@dest.Title</h3>
+                            </div>
+                        </div>
+                    </article>
+                }
+            }
+            else
+            {
+                <div class="col-span-3 py-24 text-center">
+                    <span class="inline-grid h-16 w-16 place-items-center rounded-full bg-forest/5 text-forest/30 mb-4"><AppIcon Name="compass" Size="28" /></span>
+                    <h3 class="font-display text-2xl text-forest">No destinations found.</h3>
+                    <p class="text-forest/60 mt-2">Try selecting a different filter.</p>
+                </div>
+            }
+        </div>
+    </section>
+</main>
+
+@code {
+    private string activeFilter = "All";
+
+    private record DestinationItem(string Title, string Location, string Continent, string Badge, string Image, string Alt);
+
+    private List<DestinationItem> allDestinations = new()
+    {
+        // ASIA
+        new("Lagoons beyond the map", "Coron, Philippines", "Asia", "7 Days", "https://images.unsplash.com/photo-1570789210967-2cac24afeb00", "Coron, Philippines"),
+        new("Slow days under palms", "Siargao, Philippines", "Asia", "8 Days", "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2", "Siargao, Philippines"),
+        new("Barefoot in the blue", "Baa Atoll, Maldives", "Asia", "6 Days", "https://images.unsplash.com/photo-1514282401047-d79a71a590e8", "Maldives"),
+        new("Kyoto in full bloom", "Kyoto, Japan", "Asia", "9 Days", "https://dynamic-media.tacdn.com/media/photo-o/34/1d/af/f2/caption.jpg?f=webp&w=2400&h=1400", "Kyoto, Japan"),
+        new("Bamboo Forest Trails", "Arashiyama, Japan", "Asia", "5 Days", "https://res-4.cloudinary.com/jnto/image/upload/w_2064,h_1300,c_fill,f_auto,fl_lossy,q_auto/v1514372943/kyoto/Kyoto1112_1", "Arashiyama Bamboo Grove"),
+        new("Temple & Tea Retreat", "Uji, Japan", "Asia", "4 Days", "https://www.datocms-assets.com/101439/1708940658-byodo-in-temple.jpg?auto=format&h=1000&w=1000", "Uji Japan"),
+        new("Ubud Jungle Sanctuary", "Ubud, Bali", "Asia", "6 Days", "https://images.luxuryescapes.com/q_auto:good,c_fill,g_auto,ar_16:9/yy6kjczvdigunoswrgfv.jpeg", "Bali Indonesia"),
+
+        // EUROPE
+        new("High peaks & quiet lakes", "Bernese Alps, Switzerland", "Europe", "7 Days", "https://as2.ftcdn.net/jpg/03/39/19/45/1000_F_339194540_eHMa5NxLR8iVR2WCf6g377r8FR18MFgr.jpg", "Swiss Alps"),
+        new("Matterhorn Base Camp", "Zermatt, Switzerland", "Europe", "6 Days", "https://i.pinimg.com/originals/95/84/26/95842608d7236879915ea6d0f79928cf.jpg", "Zermatt Matterhorn"),
+        new("Glacier Express Route", "St. Moritz, Switzerland", "Europe", "5 Days", "https://www.glacierexpress.ch/_next/image?url=https:%2F%2Fglacierexpress.ch%2Fserver%2Fuploads%2Fap-uploads%2F2f914945a9a012b26c885099d2648820.jpg&w=1200&q=75", "St Moritz"),
+        new("Path of the Gods", "Amalfi Coast, Italy", "Europe", "6 Days", "https://www.muchbetteradventures.com/magazine/content/images/size/w2400/2024/07/path-of-the-gods-amalfi-coast.jpg", "Amalfi Coast"),
+        new("Caldera Sail & Sunsets", "Santorini, Greece", "Europe", "5 Days", "https://rare-gallery.com/uploads/posts/1143531-sunset-sea-cityscape-bay-beach-evening-coast-town-resort-Greece-cape-dusk-Santorini-vacation-ocean.jpg", "Santorini Greece"),
+
+        // AFRICA
+        new("Follow the old caravan road", "Sahara, Morocco", "Africa", "8 Days", "https://images.pexels.com/photos/34329675/pexels-photo-34329675/free-photo-of-camel-caravan-crossing-moroccan-sahara-desert.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", "Sahara Desert"),
+        new("Atlas Mountain Kasbahs", "Marrakech, Morocco", "Africa", "5 Days", "https://img.freepik.com/premium-photo/traditional-mud-built-berber-village-kasbahs-marrakech-atlas-mountains-morocco-africa_1048944-23508050.jpg", "Morocco"),
+        new("Wild encounters & golden light", "Maasai Mara, Kenya", "Africa", "6 Days", "https://images.unsplash.com/photo-1516426122078-c23e76319801", "Maasai Mara"),
+        new("Rift Valley Safari", "Lake Nakuru, Kenya", "Africa", "4 Days", "https://www.hilmuks.com/wp-content/uploads/2026/01/lake-nakuru-lake-naivasha-safari-flamingos-rhinos.jpg", "Kenya Safari"),
+
+        // SOUTH AMERICA
+        new("Untamed peaks & glaciers", "Patagonia, Chile", "South America", "7 Days", "https://wallup.net/wp-content/uploads/2019/05/10/70124-nature-chile-patagonia-chile-patagonia-mountains-snow-water-islands-sky-clouds.jpg", "Patagonia Chile"),
+        new("The W Trek Explorer", "Torres del Paine", "South America", "8 Days", "https://cdn.audleytravel.com/4214/3010/79/8000816-torres-del-paine-chile.jpg", "Torres del Paine")
+    };
+
+    private List<DestinationItem> filteredDestinations => activeFilter == "All" 
+        ? allDestinations 
+        : allDestinations.Where(d => d.Continent == activeFilter).ToList();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("window.scrollTo", 0, 0);
+        }
+    }
+
+    private void SetFilter(string filter)
+    {
+        activeFilter = filter;
+    }
+}

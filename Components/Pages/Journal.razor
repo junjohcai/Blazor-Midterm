@@ -1,0 +1,72 @@
+@page "/journal"
+@using MyBlazorApp.Components.Shared
+
+<PageTitle>Roamwild - The Travel Journal</PageTitle>
+
+<main class="min-h-screen bg-cream text-forest selection:bg-coral selection:text-white">
+    <!-- Solid Header -->
+    <header class="bg-forest text-white py-6 px-5 md:px-10 lg:px-16">
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between">
+            <a href="/" class="logo group flex items-center gap-2.5 text-left" aria-label="Roamwild home">
+                <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                    <AppIcon Name="compass" Size="22" />
+                </span>
+                <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+            </a>
+            <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
+                <a class="nav-link hover:text-coral transition-colors" href="/#journeys">Destinations</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/#experiences">Experiences</a>
+                <a class="nav-link text-coral" href="/journal">Journal</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/contact">Contact</a>
+            </nav>
+            <a href="/contact" class="hidden h-11 items-center gap-2 rounded-full border border-white/40 px-5 text-sm font-semibold transition-colors hover:bg-white hover:text-forest sm:flex">
+                Plan my trip <AppIcon Name="arrow" Size="17" />
+            </a>
+        </div>
+    </header>
+
+    <!-- Journal Header -->
+    <section class="mx-auto max-w-[1440px] px-5 pt-20 pb-12 md:px-10 lg:px-16">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-coral">The Travel Journal</p>
+        <h1 class="font-display text-5xl md:text-7xl leading-tight mt-4">Field notes & <em>dispatches.</em></h1>
+        <p class="mt-6 max-w-xl text-lg leading-8 text-forest/70">Stories from our community of travellers, local experts, and guides scattered across the globe.</p>
+    </section>
+
+    <!-- Articles Grid -->
+    <section class="mx-auto max-w-[1440px] px-5 pb-24 md:px-10 lg:px-16">
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            @foreach (var article in articles)
+            {
+                <article class="group cursor-pointer">
+                    <div class="overflow-hidden rounded-[2rem] aspect-[4/3] bg-sand">
+                        <img src="@article.Image" alt="@article.Title" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    </div>
+                    <div class="pt-6 px-2">
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-coral-dark">@article.Category · @article.ReadTime</span>
+                        <h3 class="mt-3 font-display text-2xl leading-tight group-hover:text-coral transition-colors">@article.Title</h3>
+                        <p class="mt-3 text-sm leading-6 text-forest/70 line-clamp-2">@article.Excerpt</p>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+
+    <!-- Simple Footer -->
+    <footer class="bg-forest px-5 py-12 text-white md:px-10 lg:px-16 text-center">
+        <p class="text-sm text-white/55">© 2026 Roamwild Travel Co. All rights reserved.</p>
+    </footer>
+</main>
+
+@code {
+    private record Article(string Title, string Excerpt, string Category, string ReadTime, string Image);
+
+    private List<Article> articles = new()
+    {
+        new("The last quiet islands of the Philippines", "Hidden coves, family-run stays, and the communities keeping their home beautifully wild.", "Island Notes", "6 min", "https://images.unsplash.com/photo-1575999080555-3f7a698dd8d9?auto=format&fit=crop&q=84&w=800"),
+        new("How to see sakura beyond the crowds", "A local’s route through lesser-known gardens, riverside walks, and mountain villages in bloom.", "Seasonal Guide", "9 min", "https://images.unsplash.com/photo-1675151996268-13acbb2d4a10?auto=format&fit=crop&q=84&w=800"),
+        new("What the Sahara sounds like after dark", "Firelight, distant music, and the profound quiet found beyond the last desert road.", "Desert Dispatch", "7 min", "https://images.unsplash.com/photo-1675682330063-7e618e7bffaa?auto=format&fit=crop&q=84&w=800"),
+        new("The slow train through Switzerland", "Why the finest way across the Alps is measured in lake views, village stops, and long lunches.", "Trail Guide", "8 min", "https://images.unsplash.com/photo-1526925528837-813a7961f5c7?auto=format&fit=crop&q=84&w=800"),
+        new("The Mara from the sky at first light", "A balloon journey over winding rivers, migrating herds, and an endless gold horizon.", "Safari Notes", "10 min", "https://images.unsplash.com/photo-1517846875602-2371528547d4?auto=format&fit=crop&q=84&w=800"),
+        new("Mastering the art of Italian slow living", "Lessons from a Tuscan farmhouse on why the best things take time.", "Culture", "5 min", "https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&q=84&w=800")
+    };
+}

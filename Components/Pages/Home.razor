@@ -1,6 +1,364 @@
 ﻿@page "/"
+@using MyBlazorApp.Models
+@using MyBlazorApp.Components.Shared
+@rendermode InteractiveServer
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Roamwild - Destinations</PageTitle>
 
-<h1 class="text-4xl font-bold text-blue-600 mb-4">Welcome to our Blazor App!</h1>
-<p class="text-lg">Tailwind CSS is working perfectly.</p>
+<main class="@slide.Theme theme-shell min-h-screen bg-cream text-forest selection:bg-coral selection:text-white transition-colors duration-700">
+    <!-- Hero Section -->
+    <section class="hero relative min-h-[760px] text-white">
+        <img @key="slide.Image" class="hero-image absolute inset-0 h-full w-full object-cover transition-opacity duration-700" src="@slide.Image" alt="@slide.Alt" />
+        <div class="hero-shade absolute inset-0 bg-black/30"></div>
+
+        <header class="relative z-30 mx-auto flex max-w-[1440px] items-center justify-between px-5 py-6 md:px-10 lg:px-16">
+            <button class="logo group flex items-center gap-2.5 text-left" aria-label="Roamwild home">
+                <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                    <AppIcon Name="compass" Size="22" />
+                </span>
+                <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+            </button>
+
+            <nav class="hidden items-center gap-9 text-sm font-medium lg:flex" aria-label="Main navigation">
+                <a class="nav-link" href="#journeys">Destinations</a>
+                <a class="nav-link" href="#experiences">Experiences</a>
+                <a class="nav-link" href="#journal">Journal</a>
+                <a class="nav-link" href="#contact">Contact</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <a href="/contact" class="hidden h-11 items-center gap-2 rounded-full border border-white/40 px-5 text-sm font-semibold backdrop-blur-sm transition-colors hover:bg-white hover:text-forest sm:flex">
+                    Plan my trip <AppIcon Name="arrow" Size="17" />
+                </a>
+                <button class="grid h-11 w-11 place-items-center rounded-full border border-white/40 backdrop-blur-sm lg:hidden" @onclick="() => menuOpen = !menuOpen">
+                    <AppIcon Name="@(menuOpen ? "x" : "menu")" />
+                </button>
+            </div>
+        </header>
+
+        @if (menuOpen)
+        {
+            <nav class="absolute inset-x-5 top-20 z-40 rounded-3xl bg-cream p-6 text-forest shadow-2xl lg:hidden">
+                @foreach (var item in new[] { "Destinations", "Experiences", "Journal", "Contact" })
+                {
+                    <a class="flex items-center justify-between border-b border-forest/10 py-4 font-display text-2xl" href="#@item.ToLower().Replace(" ", "-")" @onclick="() => menuOpen = false">
+                        @item <AppIcon Name="arrow" />
+                    </a>
+                }
+            </nav>
+        }
+
+        <div class="relative z-10 mx-auto flex max-w-[1440px] flex-col items-start px-5 pt-20 md:px-10 md:pt-28 lg:px-16 lg:pt-32">
+            <div class="mb-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.24em]">
+                <span class="h-px w-9 bg-coral"></span>
+                @slide.Kicker
+            </div>
+            <h1 class="font-display max-w-4xl text-[clamp(3.7rem,8vw,7.5rem)] leading-[0.86] tracking-[-0.045em]">
+                @slide.Title <span class="font-light italic text-coral">@slide.Accent</span>
+            </h1>
+            <p class="mt-7 max-w-lg text-base leading-7 text-white/85 md:text-lg">
+                @slide.Description
+            </p>
+        </div>
+
+        <button @onclick="() => MoveSlide(-1)" class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-colors" aria-label="Previous destination">
+            <span class="rotate-180 block"><AppIcon Name="arrow" Size="23" /></span>
+        </button>
+        <button @onclick="() => MoveSlide(1)" class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 p-3 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-sm transition-colors" aria-label="Next destination">
+            <AppIcon Name="arrow" Size="23" />
+        </button>
+
+        <div class="absolute bottom-32 right-5 z-20 hidden items-center gap-5 text-xs font-bold uppercase tracking-[0.18em] text-white md:bottom-28 md:right-10 md:flex lg:right-16">
+            <span>@((slideIndex + 1).ToString("D2"))</span>
+            <div class="flex gap-2">
+                @for (int i = 0; i < heroSlides.Count; i++)
+                {
+                    int capturedIndex = i;
+                    <button @onclick="() => slideIndex = capturedIndex" class="h-px transition-all duration-500 @(i == slideIndex ? "w-10 bg-coral" : "w-5 bg-white/55 hover:bg-white")" aria-label="Go to slide @(i+1)"></button>
+                }
+            </div>
+            <span class="text-white/55">@heroSlides.Count.ToString("D2")</span>
+            <span class="ml-2 flex items-center gap-2 text-white"><AppIcon Name="location" Size="15" /> @slide.Location</span>
+        </div>
+
+        <form @onsubmit="SubmitSearch" @onsubmit:preventDefault="true" class="search-panel absolute bottom-0 left-1/2 z-20 grid w-[calc(100%-2.5rem)] max-w-[1312px] -translate-x-1/2 translate-y-1/2 grid-cols-1 overflow-hidden rounded-2xl bg-white text-forest shadow-2xl md:grid-cols-[1.15fr_1fr_.75fr_auto] md:rounded-full">
+            <label class="search-field border-b border-forest/10 px-6 py-4 md:border-b-0 md:border-r">
+                <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest/70"><AppIcon Name="location" Size="18" /> Where do you want to go?</span>
+                <input @bind="searchDestination" class="w-full bg-transparent text-sm font-medium text-forest outline-none mt-1" placeholder="@slide.Search" />
+            </label>
+            <label class="search-field border-b border-forest/10 px-6 py-4 md:border-b-0 md:border-r">
+                <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest/70"><AppIcon Name="calendar" Size="18" /> When?</span>
+                <input @bind="searchDates" class="w-full bg-transparent text-sm font-medium text-forest outline-none mt-1" placeholder="Choose your dates" />
+            </label>
+            <label class="search-field border-b border-forest/10 px-6 py-4 md:border-b-0 md:border-r">
+                <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-forest/70"><AppIcon Name="users" Size="18" /> Travellers</span>
+                <select @bind="searchTravellers" class="w-full bg-transparent text-sm font-medium text-forest outline-none mt-1">
+                    <option value="1">1 traveller</option>
+                    <option value="2">2 travellers</option>
+                    <option value="3">3 travellers</option>
+                    <option value="4">4+ travellers</option>
+                </select>
+            </label>
+            <button type="submit" class="m-2 flex items-center justify-center gap-2 rounded-xl bg-coral px-8 py-4 font-semibold text-white transition-all hover:bg-coral-dark md:rounded-full">
+                <AppIcon Name="search" Size="19" /> Explore
+            </button>
+        </form>
+    </section>
+
+    @if (!string.IsNullOrEmpty(notice))
+    {
+        <div class="fixed bottom-5 left-1/2 z-50 flex -translate-x-1/2 items-center gap-5 rounded-full bg-forest px-6 py-3 text-sm text-white shadow-xl">
+            @notice
+            <button class="text-white/70 hover:text-white" @onclick="() => notice = string.Empty"><AppIcon Name="x" Size="16" /></button>
+        </div>
+    }
+
+    <!-- Journeys Section -->
+    <section class="mx-auto max-w-[1440px] px-5 pb-24 pt-36 md:px-10 md:pb-32 md:pt-40 lg:px-16" id="journeys">
+        <div class="mb-12 flex flex-col items-start justify-between gap-7 md:flex-row md:items-end">
+            <div>
+                <p class="eyebrow text-xs font-bold uppercase tracking-[0.2em] text-coral">Inspired by @slide.Location</p>
+                <h2 class="section-title mt-3 font-display text-4xl md:text-5xl lg:text-6xl leading-tight">@slide.CollectionTitle <em>@slide.CollectionAccent</em></h2>
+            </div>
+            <a href="/destinations" class="group flex items-center gap-3 border-b border-forest/30 pb-2 text-sm font-semibold">
+                View all destinations
+                <span class="transition-transform group-hover:translate-x-1"><AppIcon Name="arrow" Size="18" /></span>
+            </a>
+        </div>
+
+        <div class="grid gap-7 md:grid-cols-3">
+            @for (int i = 0; i < slide.Journeys.Count; i++)
+            {
+                var journey = slide.Journeys[i];
+                <article class="journey-card group @(i == 1 ? "md:mt-12" : "")">
+                    <div class="relative aspect-[4/5] overflow-hidden rounded-[1.75rem]">
+                        <img class="h-full w-full object-cover transition duration-700 group-hover:scale-105" src="@journey.Image" alt="@journey.Alt" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-forest/65 via-transparent to-transparent"></div>
+                        <span class="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-xs font-bold uppercase tracking-wider text-forest backdrop-blur">
+                            @journey.Days
+                        </span>
+                        <button @onclick="() => ToggleSave(journey.Title)" class="absolute right-5 top-5 grid h-11 w-11 place-items-center rounded-full backdrop-blur transition-colors @(saved.Contains(journey.Title) ? "bg-coral text-white" : "bg-white/15 text-white hover:bg-white hover:text-coral")">
+                            <AppIcon Name="heart" Size="19" />
+                        </button>
+                        <div class="absolute bottom-0 left-0 p-6 text-white">
+                            <p class="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-white/75"><AppIcon Name="location" Size="15" /> @journey.Place</p>
+                            <h3 class="font-display text-3xl leading-tight">@journey.Title</h3>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between px-1 pt-5">
+                        <span class="text-sm text-forest/60">Small group · Expert led</span>
+                        <span class="font-semibold">@journey.From</span>
+                    </div>
+                </article>
+            }
+        </div>
+    </section>
+
+    <!-- Experiences Section -->
+    <section class="bg-forest transition-colors duration-700 py-24 text-white md:py-32" id="experiences">
+        <div class="mx-auto grid max-w-[1440px] gap-14 px-5 md:px-10 lg:grid-cols-[.9fr_1.1fr] lg:items-center lg:gap-24 lg:px-16">
+            <div class="relative mx-auto w-full max-w-xl">
+                <div class="relative aspect-[5/6] overflow-hidden rounded-t-[12rem] rounded-b-[2rem]">
+                    <img @key="slide.FeatureImage" class="theme-image h-full w-full object-cover transition-opacity duration-700" src="@slide.FeatureImage" alt="@slide.FeatureAlt" />
+                </div>
+                <button class="absolute -bottom-7 right-7 grid h-24 w-24 place-items-center rounded-full bg-coral text-white shadow-xl transition-transform hover:scale-105">
+                    <AppIcon Name="play" Size="29" />
+                </button>
+                <div class="absolute -left-3 top-12 rounded-2xl bg-cream px-5 py-4 text-forest shadow-xl md:-left-8">
+                    <span class="font-display text-3xl">@slide.Stat</span>
+                    <p class="text-xs uppercase tracking-widest text-forest/60">@slide.StatLabel</p>
+                </div>
+            </div>
+
+            <div id="story">
+                <p class="text-xs font-bold uppercase tracking-[0.2em] text-sand">Travel deeper · @slide.Location</p>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-tight mt-3 max-w-2xl text-white">@slide.FeatureTitle <em>@slide.FeatureAccent</em></h2>
+                <p class="mt-7 max-w-xl text-lg leading-8 text-white/65">
+                    @slide.FeatureCopy
+                </p>
+                <div class="mt-12 grid gap-8 border-t border-white/15 pt-10 sm:grid-cols-3">
+                    <div>
+                        <span class="text-xs font-bold text-coral">01</span>
+                        <h3 class="mt-4 font-display text-xl">Local at heart</h3>
+                        <p class="mt-2 text-sm leading-6 text-white/55">Guides who call your destination home.</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-coral">02</span>
+                        <h3 class="mt-4 font-display text-xl">Made for you</h3>
+                        <p class="mt-2 text-sm leading-6 text-white/55">Flexible journeys shaped around your rhythm.</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold text-coral">03</span>
+                        <h3 class="mt-4 font-display text-xl">Tread lightly</h3>
+                        <p class="mt-2 text-sm leading-6 text-white/55">Travel that gives more than it takes.</p>
+                    </div>
+                </div>
+                <a href="/contact" class="mt-12 w-fit flex items-center gap-3 rounded-full bg-white px-7 py-4 text-sm font-bold text-forest transition-colors hover:bg-sand">
+                    Meet our local experts <AppIcon Name="arrow" Size="18" />
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Journal Section -->
+    <section class="mx-auto max-w-[1440px] px-5 py-24 md:px-10 md:py-32 lg:px-16" id="journal">
+        <div class="grid gap-12 lg:grid-cols-[.72fr_1.28fr] lg:gap-20">
+            <div class="flex flex-col justify-between">
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-[0.2em] text-coral">The travel journal</p>
+                    <h2 class="font-display text-4xl md:text-5xl lg:text-6xl leading-tight mt-3">Stories for the <em>curious.</em></h2>
+                    <p class="mt-6 max-w-sm leading-7 text-forest/60">Field notes, thoughtful guides, and dispatches from our community of travellers.</p>
+                </div>
+                <a href="/journal" class="group mt-8 flex w-fit items-center gap-3 border-b border-forest/30 pb-2 text-sm font-semibold">
+                    Explore the journal <span class="transition-transform group-hover:translate-x-1"><AppIcon Name="arrow" Size="18" /></span>
+                </a>
+            </div>
+            <article class="group grid overflow-hidden rounded-[2rem] bg-sand/45 md:grid-cols-2">
+                <div class="min-h-[360px] overflow-hidden">
+                    <img @key="slide.JournalImage" class="theme-image h-full w-full object-cover transition duration-700 group-hover:scale-105" src="@slide.JournalImage" alt="@slide.JournalAlt" />
+                </div>
+                <div class="flex flex-col justify-between p-8 md:p-10">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-[0.2em] text-coral-dark">@slide.JournalMeta</span>
+                        <h3 class="mt-5 font-display text-3xl leading-tight md:text-4xl">@slide.JournalTitle</h3>
+                        <p class="mt-5 leading-7 text-forest/60">@slide.JournalCopy</p>
+                    </div>
+                    <a href="#" class="mt-10 flex items-center gap-2 text-sm font-bold">Read the story <AppIcon Name="chevron" Size="16" /></a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="contact" class="mx-5 mb-5 overflow-hidden rounded-[2rem] bg-coral transition-colors duration-700 text-white md:mx-10 lg:mx-16">
+        <div class="mx-auto flex max-w-5xl flex-col items-center px-6 py-20 text-center md:py-24">
+            <span class="mb-5 grid h-12 w-12 place-items-center rounded-full border border-white/35"><AppIcon Name="compass" Size="24" /></span>
+            <h2 class="font-display text-4xl leading-tight md:text-6xl">@slide.CtaTitle</h2>
+            <p class="mt-5 max-w-xl text-white/75">@slide.CtaCopy</p>
+            <a href="/contact" class="mt-8 flex w-fit items-center gap-3 rounded-full bg-forest px-8 py-4 text-sm font-bold transition-transform hover:scale-[1.03]">
+                Start planning your trip <AppIcon Name="arrow" Size="18" />
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-forest transition-colors duration-700 px-5 pb-8 pt-16 text-white md:px-10 lg:px-16">
+        <div class="mx-auto max-w-[1312px]">
+            <div class="grid gap-12 pb-14 md:grid-cols-[1.4fr_1fr_1fr]">
+                <div>
+                    <div class="flex items-center gap-2.5">
+                        <span class="grid h-9 w-9 place-items-center rounded-full border border-white/35"><AppIcon Name="compass" Size="20" /></span>
+                        <span class="font-display text-2xl">Roamwild</span>
+                    </div>
+                    <p class="mt-5 max-w-xs text-sm leading-6 text-white/55">Uncommon journeys, made personal. Based everywhere worth going.</p>
+                </div>
+                <div class="grid grid-cols-2 gap-6 text-sm">
+                    <div class="space-y-3">
+                        <p class="mb-5 text-xs font-bold uppercase tracking-widest text-white/35">Explore</p>
+                        <a class="block hover:text-coral" href="#journeys">Destinations</a>
+                        <a class="block hover:text-coral" href="#experiences">Experiences</a>
+                        <a class="block hover:text-coral" href="#journal">Journal</a>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="mb-5 text-xs font-bold uppercase tracking-widest text-white/35">Company</p>
+                        <a class="block hover:text-coral" href="#story">About</a>
+                        <a class="block hover:text-coral" href="#">Impact</a>
+                        <a class="block hover:text-coral" href="#">Contact</a>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-xs font-bold uppercase tracking-widest text-white/35">A little inspiration</p>
+                    <p class="mt-4 text-sm text-white/60">Monthly stories and hidden places, delivered.</p>
+                    <form @onsubmit='() => notice = "You’re on the list. Adventure is coming."' @onsubmit:preventDefault="true" class="mt-5 flex border-b border-white/30 pb-3">
+                        <input required type="email" placeholder="Your email address" class="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-white/35" />
+                        <button type="submit" class="text-coral"><AppIcon Name="arrow" /></button>
+                    </form>
+                </div>
+            </div>
+            <div class="flex flex-col justify-between gap-4 border-t border-white/10 pt-7 text-xs text-white/35 sm:flex-row">
+                <p>© 2026 Roamwild Travel Co.</p>
+                <div class="flex gap-6"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Instagram</a></div>
+            </div>
+        </div>
+    </footer>
+</main>
+
+@code {
+    private List<Slide> heroSlides = TravelRepository.GetSlides();
+    private int slideIndex = 0;
+    private Slide slide => heroSlides[slideIndex];
+
+    private bool menuOpen = false;
+    private List<string> saved = new();
+    private string notice = "";
+
+    private string searchDestination = "";
+    private string searchDates = "";
+    private string searchTravellers = "2";
+
+    private void MoveSlide(int direction)
+    {
+        slideIndex = (slideIndex + direction + heroSlides.Count) % heroSlides.Count;
+    }
+
+    private void ToggleSave(string title)
+    {
+        if (saved.Contains(title)) saved.Remove(title);
+        else saved.Add(title);
+    }
+
+    private void SubmitSearch()
+    {
+        var dest = string.IsNullOrWhiteSpace(searchDestination) ? "your chosen destination" : searchDestination;
+        notice = $"We’re finding the best journeys for {dest}.";
+    }
+}
+
+<style>
+    /* Smooth transitions for all theme color changes */
+    .theme-shell * {
+        transition-property: background-color, color, border-color;
+        transition-duration: 700ms;
+        transition-timing-function: ease-in-out;
+    }
+
+    /* 1. Tropical (Philippines - Default) */
+    .theme-tropical .bg-forest { background-color: #1B3B36 !important; }
+    .theme-tropical .text-forest { color: #1B3B36 !important; }
+    .theme-tropical .bg-coral { background-color: #EF6650 !important; }
+    .theme-tropical .text-coral { color: #EF6650 !important; }
+    .theme-tropical .bg-cream { background-color: #F9F6F0 !important; }
+    .theme-tropical .text-sand { color: #E8E3D9 !important; }
+
+    /* 2. Sakura (Japan) */
+    .theme-sakura .bg-forest { background-color: #3D262A !important; }
+    .theme-sakura .text-forest { color: #3D262A !important; }
+    .theme-sakura .bg-coral { background-color: #E85D75 !important; }
+    .theme-sakura .text-coral { color: #E85D75 !important; }
+    .theme-sakura .bg-cream { background-color: #FFF7F8 !important; }
+    .theme-sakura .text-sand { color: #F2E1E6 !important; }
+
+    /* 3. Desert (Morocco) */
+    .theme-desert .bg-forest { background-color: #4A3B2C !important; }
+    .theme-desert .text-forest { color: #4A3B2C !important; }
+    .theme-desert .bg-coral { background-color: #D48C46 !important; }
+    .theme-desert .text-coral { color: #D48C46 !important; }
+    .theme-desert .bg-cream { background-color: #FCF9F2 !important; }
+    .theme-desert .text-sand { color: #EEDCC6 !important; }
+
+    /* 4. Alpine (Switzerland) */
+    .theme-alpine .bg-forest { background-color: #1E3A4C !important; }
+    .theme-alpine .text-forest { color: #1E3A4C !important; }
+    .theme-alpine .bg-coral { background-color: #5A8CAE !important; }
+    .theme-alpine .text-coral { color: #5A8CAE !important; }
+    .theme-alpine .bg-cream { background-color: #F4F7F9 !important; }
+    .theme-alpine .text-sand { color: #DDE5ED !important; }
+
+    /* 5. Savanna (Kenya) */
+    .theme-savanna .bg-forest { background-color: #3E3624 !important; }
+    .theme-savanna .text-forest { color: #3E3624 !important; }
+    .theme-savanna .bg-coral { background-color: #E09E36 !important; }
+    .theme-savanna .text-coral { color: #E09E36 !important; }
+    .theme-savanna .bg-cream { background-color: #FDFBF7 !important; }
+    .theme-savanna .text-sand { color: #EAE3D2 !important; }
+</style>

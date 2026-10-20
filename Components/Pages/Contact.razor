@@ -1,0 +1,110 @@
+@page "/contact"
+@using MyBlazorApp.Components.Shared
+@rendermode InteractiveServer
+
+<PageTitle>Roamwild - Contact & Planning</PageTitle>
+
+<main class="min-h-screen bg-sand text-forest selection:bg-coral selection:text-white">
+    <!-- Solid Header -->
+    <header class="bg-forest text-white py-6 px-5 md:px-10 lg:px-16">
+        <div class="mx-auto flex max-w-[1440px] items-center justify-between">
+            <a href="/" class="logo group flex items-center gap-2.5 text-left" aria-label="Roamwild home">
+                <span class="grid h-10 w-10 place-items-center rounded-full border border-white/45 transition-transform group-hover:rotate-12">
+                    <AppIcon Name="compass" Size="22" />
+                </span>
+                <span class="font-display text-[1.55rem] tracking-tight">Roamwild</span>
+            </a>
+            <nav class="hidden items-center gap-9 text-sm font-medium lg:flex">
+                <a class="nav-link hover:text-coral transition-colors" href="/#journeys">Destinations</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/#experiences">Experiences</a>
+                <a class="nav-link hover:text-coral transition-colors" href="/journal">Journal</a>
+                <a class="nav-link text-coral" href="/contact">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="mx-auto max-w-[1440px] px-5 py-20 md:px-10 lg:px-16 grid lg:grid-cols-2 gap-16 items-center">
+        <!-- Text Content -->
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.2em] text-coral">Start Planning</p>
+            <h1 class="font-display text-5xl md:text-7xl leading-tight mt-4">Let's craft your <em>escape.</em></h1>
+            <p class="mt-6 text-lg leading-8 text-forest/70">Whether you know exactly where you want to go, or you're just looking for inspiration, our local experts are here to design a journey that feels entirely your own.</p>
+            
+            <div class="mt-12 space-y-6 border-t border-forest/10 pt-10">
+                <div class="flex items-center gap-4">
+                    <div class="grid h-12 w-12 place-items-center rounded-full bg-cream"><AppIcon Name="location" Size="20" /></div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-forest/50">Global HQ</p>
+                        <p class="font-medium">Cebu City, Philippines</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="grid h-12 w-12 place-items-center rounded-full bg-cream"><AppIcon Name="users" Size="20" /></div>
+                    <div>
+                        <p class="text-xs font-bold uppercase tracking-widest text-forest/50">Email</p>
+                        <p class="font-medium">journeys@roamwild.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="bg-cream p-8 md:p-12 rounded-[2rem] shadow-xl">
+            @if (isSubmitted)
+            {
+                <div class="text-center py-12">
+                    <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-coral/20 text-coral mb-6">
+                        <AppIcon Name="heart" Size="28" />
+                    </div>
+                    <h3 class="font-display text-3xl mb-4">Request Received!</h3>
+                    <p class="text-forest/70">Thank you, @name. One of our travel designers will reach out to you within 24 hours.</p>
+                    <button @onclick="() => isSubmitted = false" class="mt-8 text-sm font-bold text-coral hover:text-coral-dark">Send another message</button>
+                </div>
+            }
+            else
+            {
+                <form @onsubmit="SubmitForm" class="space-y-6">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-forest/70 mb-2">Name</label>
+                        <input required @bind="name" type="text" class="w-full bg-white border border-forest/10 rounded-xl px-5 py-4 outline-none focus:border-coral transition-colors" placeholder="Jane Doe" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-forest/70 mb-2">Email address</label>
+                        <input required @bind="email" type="email" class="w-full bg-white border border-forest/10 rounded-xl px-5 py-4 outline-none focus:border-coral transition-colors" placeholder="jane@example.com" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-forest/70 mb-2">Where do you want to go?</label>
+                        <select @bind="destination" class="w-full bg-white border border-forest/10 rounded-xl px-5 py-4 outline-none focus:border-coral transition-colors">
+                            <option value="">I'm not sure yet</option>
+                            <option value="Asia">Asia</option>
+                            <option value="Europe">Europe</option>
+                            <option value="Africa">Africa</option>
+                            <option value="South America">South America</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-forest/70 mb-2">Tell us about your trip</label>
+                        <textarea required @bind="message" rows="4" class="w-full bg-white border border-forest/10 rounded-xl px-5 py-4 outline-none focus:border-coral transition-colors resize-none" placeholder="What kind of experiences are you looking for?"></textarea>
+                    </div>
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 rounded-xl bg-coral px-8 py-4 font-semibold text-white transition-all hover:bg-coral-dark">
+                        Submit Request <AppIcon Name="arrow" Size="18" />
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</main>
+
+@code {
+    private string name = "";
+    private string email = "";
+    private string destination = "";
+    private string message = "";
+    private bool isSubmitted = false;
+
+    private void SubmitForm()
+    {
+        // Here you would normally save to a database or send an email.
+        isSubmitted = true;
+    }
+}
